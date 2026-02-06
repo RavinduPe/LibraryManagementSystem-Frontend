@@ -11,11 +11,12 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "axios": "^1.13.4",
     "vue": "^3.5.27"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",
-    "@types/node": "^24.10.9",
+    "@types/node": "^24.10.11",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vue/tsconfig": "^0.8.1",
     "npm-run-all2": "^8.0.4",
