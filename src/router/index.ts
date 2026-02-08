@@ -1,3 +1,4 @@
+import { createRouter, createWebHistory } from "vue-router";
 import AddBook from "../views/AddBook.vue";
 
 const routes = [
@@ -7,3 +8,10 @@ const routes = [
     component: AddBook,
   },
 ];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+export default router;
