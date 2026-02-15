@@ -1,30 +1,31 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { addBook } from "../api/bookApi";
-import type { Book } from "../types/Book";
+import axios from "axios";
 
-const book = ref<Book>({
-  title: "",
-  genre: "",
-  price: 0,
-  available: true,
-  authorId: 0,
-});
+const title = ref("");
+const author = ref("");
+const price = ref(0);
 
-const errors = ref<Record<string, string>>({});
-
-const submitForm = async () => {
-  errors.value = {};
+const addBook = async () => {
   try {
-    await addBook(book.value);
-    alert("Book added successfully");
-  } catch (err: any) {
-    if (err.response?.status === 400) {
-      errors.value = err.response.data;
-    }
+    const response = await axios.post("http://localhost:8080/books", {
+      title: title.value,
+      author: author.value,
+      price: price.value,
+    });
+
+    alert("Book Added Successfully!");
+    console.log(response.data);
+
+    title.value = "";
+    author.value = "";
+    price.value = 0;
+  } catch (error) {
+    console.error("Error adding book:", error);
   }
 };
 </script>
+
 
 <template>
   <h2>Add Book</h2>
@@ -50,6 +51,6 @@ const submitForm = async () => {
       <span v-if="errors.authorId">{{ errors.authorId }}</span>
     </div>
 
-    <button type="submit">Save</button>
+    <button @click="addBook">Add Book</button>
   </form>
 </template>
