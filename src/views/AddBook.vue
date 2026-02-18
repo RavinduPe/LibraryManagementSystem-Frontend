@@ -1,82 +1,62 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { addBook } from '../api/bookApi'
+import type { Book } from '../types/Book'
+
+const message = ref('')
+
+const book = ref<Book>({
+  id: undefined,
+  title: '',
+  genre: '',
+  price: 0,
+  available: false,
+  authorId: 1,
+  authorName: ''
+})
+
+const saveBook = async () => {
+  try {
+    const response = await addBook(book.value)
+    message.value = 'Book saved successfully ✅'
+    console.log(response.data)
+
+    // reset form
+    book.value = {
+      id: undefined,
+      title: '',
+      genre: '',
+      price: 0,
+      available: false,
+      authorId: 1,
+      authorName: ''
+    }
+  } catch (error) {
+    message.value = 'Failed to save book ❌'
+    console.error(error)
+  }
+}
+</script>
+
 <template>
   <div>
     <h2>Add Book</h2>
 
-    <form @submit.prevent="addBook">
-      <div>
-        <label>Title:</label>
-        <input v-model="book.title" required />
-      </div>
-
-      <div>
-        <label>Genre:</label>
-        <input v-model="book.genre" required />
-      </div>
-
-      <div>
-        <label>Price:</label>
-        <input type="number" v-model="book.price" required />
-      </div>
-
-      <div>
-        <label>Available:</label>
+    <form @submit.prevent="saveBook">
+      <input v-model="book.title" placeholder="Title" required />
+      <input v-model="book.genre" placeholder="Genre" required />
+      <input type="number" v-model="book.price" placeholder="Price" required />
+      
+      <label>
+        Available
         <input type="checkbox" v-model="book.available" />
-      </div>
+      </label>
 
-      <div>
-        <label>Author ID:</label>
-        <input type="number" v-model="book.authorId" required />
-      </div>
+      <input type="number" v-model="book.authorId" placeholder="Author ID" required />
 
       <button type="submit">Save</button>
     </form>
 
-    <p v-if="message">{{ message }}</p>
+    <p>{{ message }}</p>
   </div>
 </template>
-
-<script>
-import axios from "axios";
-
-export default {
-  name: "AddBook",
-  data() {
-    return {
-      book: {
-        title: "",
-        genre: "",
-        price: 0,
-        available: false,
-        authorId: null
-      },
-      message: ""
-    };
-  },
-  methods: {
-    async addBook() {
-      try {
-        const response = await axios.post(
-          "http://localhost:8080/api/books",
-          this.book
-        );
-
-        console.log(response.data);
-        this.message = "Book saved successfully ✅";
-
-        // Clear form
-        this.book = {
-          title: "",
-          genre: "",
-          price: 0,
-          available: false,
-          authorId: null
-        };
-
-      } catch (error) {
-        console.error("Error adding book:", error);
-        this.message = "Failed to save book ❌";
-      }
-    }
-  }
-};
-</script>

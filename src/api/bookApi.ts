@@ -9,3 +9,8 @@ export const addBook = (book: Book) => {
   return api.post<Book>("/books", book);
 };
 
+export const deleteBook = (id: number) => {
+  return api.delete(`/books/${id}`);
+};
+
+
