@@ -1,56 +1,82 @@
-<script setup lang="ts">
-import { ref } from "vue";
+<template>
+  <div>
+    <h2>Add Book</h2>
+
+    <form @submit.prevent="addBook">
+      <div>
+        <label>Title:</label>
+        <input v-model="book.title" required />
+      </div>
+
+      <div>
+        <label>Genre:</label>
+        <input v-model="book.genre" required />
+      </div>
+
+      <div>
+        <label>Price:</label>
+        <input type="number" v-model="book.price" required />
+      </div>
+
+      <div>
+        <label>Available:</label>
+        <input type="checkbox" v-model="book.available" />
+      </div>
+
+      <div>
+        <label>Author ID:</label>
+        <input type="number" v-model="book.authorId" required />
+      </div>
+
+      <button type="submit">Save</button>
+    </form>
+
+    <p v-if="message">{{ message }}</p>
+  </div>
+</template>
+
+<script>
 import axios from "axios";
 
-const title = ref("");
-const author = ref("");
-const price = ref(0);
+export default {
+  name: "AddBook",
+  data() {
+    return {
+      book: {
+        title: "",
+        genre: "",
+        price: 0,
+        available: false,
+        authorId: null
+      },
+      message: ""
+    };
+  },
+  methods: {
+    async addBook() {
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/api/books",
+          this.book
+        );
 
-const addBook = async () => {
-  try {
-    const response = await axios.post("http://localhost:8080/books", {
-      title: title.value,
-      author: author.value,
-      price: price.value,
-    });
+        console.log(response.data);
+        this.message = "Book saved successfully ✅";
 
-    alert("Book Added Successfully!");
-    console.log(response.data);
+        // Clear form
+        this.book = {
+          title: "",
+          genre: "",
+          price: 0,
+          available: false,
+          authorId: null
+        };
 
-    title.value = "";
-    author.value = "";
-    price.value = 0;
-  } catch (error) {
-    console.error("Error adding book:", error);
+      } catch (error) {
+        console.error("Error adding book:", error);
+        this.message = "Failed to save book ❌";
+      }
+    }
   }
 };
 </script>
-
-
-<template>
-  <h2>Add Book</h2>
-
-  <form @submit.prevent="submitForm">
-    <div>
-      <input v-model="book.title" placeholder="Title" />
-      <span v-if="errors.title">{{ errors.title }}</span>
-    </div>
-
-    <div>
-      <input v-model="book.genre" placeholder="Genre" />
-      <span v-if="errors.genre">{{ errors.genre }}</span>
-    </div>
-
-    <div>
-      <input type="number" v-model="book.price" placeholder="Price" />
-      <span v-if="errors.price">{{ errors.price }}</span>
-    </div>
-
-    <div>
-      <input type="number" v-model="book.authorId" placeholder="Author ID" />
-      <span v-if="errors.authorId">{{ errors.authorId }}</span>
-    </div>
-
-    <button @click="addBook">Add Book</button>
-  </form>
-</template>
