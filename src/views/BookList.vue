@@ -10,7 +10,6 @@ const fetchBooks = async () => {
   try {
     const response = await getAllBooks()
     books.value = response.data
-    console.log(response.data)
   } catch (err) {
     error.value = 'Failed to load books'
     console.error(err)

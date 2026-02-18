@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { addBook } from '../api/bookApi'
+import { getAllAuthors } from '../api/authorsApi'
 import type { Book } from '../types/Book'
+import type { Author } from '../types/Author'
 
 const message = ref('')
+const authors = ref<Author[]>([])
 
 const book = ref<Book>({
   id: undefined,
@@ -11,32 +14,27 @@ const book = ref<Book>({
   genre: '',
   price: 0,
   available: false,
-  authorId: 1,
+  authorId: 0,
   authorName: ''
 })
 
+const fetchAuthors = async () => {
+  const response = await getAllAuthors()
+  authors.value = response.data
+}
+
 const saveBook = async () => {
   try {
-    const response = await addBook(book.value)
+    await addBook(book.value)
     message.value = 'Book saved successfully ✅'
-    console.log(response.data)
-
-    // reset form
-    book.value = {
-      id: undefined,
-      title: '',
-      genre: '',
-      price: 0,
-      available: false,
-      authorId: 1,
-      authorName: ''
-    }
   } catch (error) {
     message.value = 'Failed to save book ❌'
-    console.error(error)
   }
 }
+
+onMounted(fetchAuthors)
 </script>
+
 
 <template>
   <div>
@@ -52,7 +50,12 @@ const saveBook = async () => {
         <input type="checkbox" v-model="book.available" />
       </label>
 
-      <input type="number" v-model="book.authorId" placeholder="Author ID" required />
+      <select v-model="book.authorId" required>
+        <option disabled value="0">Select Author</option>
+        <option v-for="author in authors" :key="author.id" :value="author.id">
+          {{ author.name }}
+        </option>
+      </select>
 
       <button type="submit">Save</button>
     </form>
