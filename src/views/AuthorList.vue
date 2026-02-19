@@ -22,9 +22,14 @@ const createAuthor = async () => {
 }
 
 const removeAuthor = async (id: number) => {
-  await deleteAuthor(id)
-  authors.value = authors.value.filter(a => a.id !== id)
+  try {
+    await deleteAuthor(id)
+    authors.value = authors.value.filter(a => a.id !== id)
+  } catch (error: any) {
+    alert(error.response?.data || "Cannot delete author")
+  }
 }
+
 
 onMounted(fetchAuthors)
 </script>
