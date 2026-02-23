@@ -5,6 +5,10 @@ import AuthorList from "../views/AuthorList.vue";
 
 const routes = [
   {
+  path: '/',
+  redirect: '/books'
+  },
+  {
     path: "/add-book",
     name: "AddBook",
     component: AddBook,
