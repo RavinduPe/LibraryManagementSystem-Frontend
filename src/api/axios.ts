@@ -1,20 +1,38 @@
 import axios from 'axios';
-import.meta.env.VITE_MY_VAR
-import { useAuthStore } from '@/stores/auth';
 
-const api = axios.create({
-    baseURL: import.meta.env.BASEURL || 'http://localhost:8080/api',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-})
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:8080/api', // ඔයාගේ Backend URL එක
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-api.interceptors.request.use(config => {
-  const auth = useAuthStore()
-  if (auth.token) {
-    config.headers.Authorization = `Bearer ${auth.token}`
+// Request Interceptor - Token එක attach කරන්න
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config
-})
+);
 
-export default api;
+// Response Interceptor - Errors handle කරන්න
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Unauthorized - Logout කරලා Login පිටුවට යවන්න
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default axiosInstance;
