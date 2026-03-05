@@ -3,12 +3,12 @@
     <div class="auth-container">
       <div class="auth-card">
         <div class="auth-header">
-          <span class="auth-icon">🔐</span>
-          <h1>Welcome Back!</h1>
-          <p>Login to your account</p>
+          <span class="auth-icon">📝</span>
+          <h1>Create Account</h1>
+          <p>Join BookManager today</p>
         </div>
 
-        <form @submit.prevent="handleLogin" class="auth-form">
+        <form @submit.prevent="handleRegister" class="auth-form">
           <div v-if="error" class="error-message">
             <span>⚠️</span> {{ error }}
           </div>
@@ -22,7 +22,8 @@
                 v-model="username"
                 type="text"
                 required
-                placeholder="Enter your username"
+                minlength="3"
+                placeholder="Choose a username"
                 :disabled="loading"
               />
             </div>
@@ -37,20 +38,36 @@
                 v-model="password"
                 type="password"
                 required
-                placeholder="Enter your password"
+                minlength="6"
+                placeholder="Choose a password"
                 :disabled="loading"
               />
             </div>
           </div>
 
-          <button type="submit" class="auth-btn" :disabled="loading">
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-group">
+              <span class="input-icon">✓</span>
+              <input
+                id="confirmPassword"
+                v-model="confirmPassword"
+                type="password"
+                required
+                placeholder="Confirm your password"
+                :disabled="loading"
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="auth-btn" :disabled="loading || !passwordsMatch">
             <span v-if="loading" class="spinner"></span>
-            <span v-else>Login</span>
+            <span v-else>Register</span>
           </button>
 
           <p class="auth-footer">
-            Don't have an account?
-            <router-link to="/register">Register here</router-link>
+            Already have an account?
+            <router-link to="/login">Login here</router-link>
           </p>
         </form>
       </div>
@@ -59,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
@@ -68,24 +85,27 @@ const authStore = useAuthStore();
 
 const username = ref('');
 const password = ref('');
+const confirmPassword = ref('');
 const loading = ref(false);
 const error = ref('');
 
-const handleLogin = async () => {
+const passwordsMatch = computed(() => password.value === confirmPassword.value);
+
+const handleRegister = async () => {
+  if (!passwordsMatch.value) {
+    error.value = 'Passwords do not match';
+    return;
+  }
+
   loading.value = true;
   error.value = '';
 
-  const success = await authStore.login(username.value, password.value);
+  const success = await authStore.register(username.value, password.value);
   
   if (success) {
-    const role = authStore.state.user?.role;
-    if (role === 'ADMIN') {
-      router.push('/admin');
-    } else {
-      router.push('/dashboard');
-    }
+    router.push('/dashboard');
   } else {
-    error.value = authStore.state.error || 'Login failed';
+    error.value = authStore.state.error || 'Registration failed';
   }
 
   loading.value = false;
@@ -93,6 +113,7 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
+/* Same styles as LoginView */
 .auth-view {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
