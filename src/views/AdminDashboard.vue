@@ -122,7 +122,8 @@
       </div>
 
       <!-- Charts Section -->
-      <div class="charts-section">
+       <!-- TODO Fix it by using Real DATA -->
+      <!-- <div class="charts-section">
         <div class="chart-card">
           <h3>User Growth</h3>
           <div class="chart-placeholder">
@@ -146,7 +147,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -158,6 +159,7 @@ import Navbar from '@/components/Navbar.vue';
 import { adminAPI } from '@/api/endpoints';
 import { borrowService } from '@/services/borrowService';
 import type { User, Book, Author, Borrow } from '@/types/models';
+import { dashboardAPI } from "@/api/endpoints"
 
 const router = useRouter();
 const loading = ref(false);
@@ -186,42 +188,37 @@ const bookCategories = ref([
   { name: 'Other', count: 10, percentage: 10 }
 ]);
 
+//TODO fetch real data for charts and recent activities from backend
 onMounted(async () => {
   await fetchDashboardData();
   generateRecentActivities();
 });
 
 const fetchDashboardData = async () => {
-  loading.value = true;
-  try {
-    const [usersRes, booksRes, authorsRes, borrowsRes] = await Promise.all([
-      adminAPI.getUsers(),
-      adminAPI.getBooks(),
-      adminAPI.getAuthors(),
-      borrowService.getAllBorrows()
-    ]);
 
-    stats.value.totalUsers = usersRes.data.length;
-    stats.value.totalBooks = booksRes.data.length;
-    stats.value.totalAuthors = authorsRes.data.length;
-    stats.value.activeBorrows = borrowsRes.filter(b => b.status === 'ACTIVE').length;
+  loading.value = true;
+
+  try {
+
+    const res = await dashboardAPI.getStats()
+
+    stats.value.totalUsers = res.data.totalUsers
+    stats.value.totalBooks = res.data.totalBooks
+    stats.value.totalAuthors = res.data.totalAuthors
+    stats.value.activeBorrows = res.data.activeBorrows
+
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
-    // Mock data for demo
-    stats.value = {
-      totalUsers: 156,
-      totalBooks: 234,
-      totalAuthors: 67,
-      activeBorrows: 42,
-      userTrend: 12,
-      bookTrend: 8,
-      authorTrend: 5,
-      borrowTrend: -3
-    };
+
+    console.error("Dashboard error", error)
+
   } finally {
-    loading.value = false;
+
+    loading.value = false
+
   }
-};
+
+}
+
 
 const generateRecentActivities = () => {
   recentActivities.value = [

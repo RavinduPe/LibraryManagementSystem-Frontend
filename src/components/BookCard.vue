@@ -7,6 +7,9 @@
     <div class="book-details">
       <h3 class="book-title">{{ book.title }}</h3>
       <p class="book-author">by {{ book.authorName || 'Unknown Author' }}</p>
+      <p class="copies">
+        Available Copies: {{ book.availableCopies }}
+      </p>
       
       <div class="book-info">
         <span class="book-genre">{{ book.genre }}</span>
@@ -92,6 +95,11 @@ defineEmits<{
 .book-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+.copies {
+  color: #e67e22;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 .book-card.admin-view {

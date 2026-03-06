@@ -57,3 +57,11 @@ export const adminAPI = {
   getActiveBorrows: () => axios.get<Borrow[]>('/admin/borrows/active'),
   returnBook: (borrowId: number) => axios.post<Borrow>(`/admin/return/${borrowId}`),
 };
+
+export const dashboardAPI = {
+
+  getStats() {
+    return axios.get("/admin/dashboard")
+  }
+
+}

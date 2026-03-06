@@ -105,6 +105,7 @@
               <th>ID</th>
               <th>Book</th>
               <th>User</th>
+              <!-- <th>Availabale Copies</th> -->
               <th>Borrow Date</th>
               <th>Due Date</th>
               <th>Return Date</th>
@@ -127,6 +128,14 @@
                   <span class="user-id">ID: {{ borrow.userId }}</span>
                 </div>
               </td>
+              <!-- <td>
+                <div class="book-inventory">
+                    <span class="inventory-badge"
+                          :class="book.availableCopies > 0 ? 'available' : 'borrowed'">
+                      {{ borrow.availableCopies }} / {{ borrow.totalCopies }} copies available
+                    </span>
+                  </div>
+              </td> -->
               <td>{{ formatDate(borrow.borrowDate) }}</td>
               <td>{{ calculateDueDate(borrow.borrowDate) }}</td>
               <td>
@@ -137,7 +146,7 @@
               </td>
               <td>
                 <span class="status-badge" :class="borrow.status.toLowerCase()">
-                  {{ borrow.status }}
+                  {{ borrow.status?.toUpperCase() }}
                 </span>
               </td>
               <td class="actions-cell">
@@ -1321,6 +1330,28 @@ const showErrorToast = (message: string) => {
 
 .toast.error {
   background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.book-inventory {
+  margin-top: 0.5rem;
+}
+
+.inventory-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.inventory-badge.available {
+  background: #d4edda;
+  color: #155724;
+}
+
+.inventory-badge.borrowed {
+  background: #f8d7da;
+  color: #721c24;
 }
 
 @keyframes spin {

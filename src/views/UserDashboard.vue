@@ -92,8 +92,8 @@
                 <span class="book-genre">{{ book.genre }}</span>
                 <span class="book-price">${{ book.price?.toFixed(2) }}</span>
               </div>
-              <span class="book-status" :class="book.available ? 'available' : 'borrowed'">
-                {{ book.available ? 'Available' : 'Borrowed' }}
+              <span class="book-status" :class="book.availableCopies > 0 ? 'available' : 'borrowed'">
+                {{ book.availableCopies > 0 ? 'Available' : 'Borrowed' }}
               </span>
             </div>
           </div>

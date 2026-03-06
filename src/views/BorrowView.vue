@@ -45,6 +45,12 @@
               <span class="book-emoji">📕</span>
             </div>
             <div class="book-details">
+            <div class="book-inventory">
+              <span class="inventory-badge"
+                :class="book.availableCopies > 0 ? 'available' : 'borrowed'">
+                {{ book.availableCopies }} / {{ book.totalCopies }} copies available
+            </span>
+            </div>
               <h3 class="book-title">{{ book.title }}</h3>
               <p class="book-author">by {{ book.authorName || 'Unknown Author' }}</p>
               <div class="book-meta">
@@ -188,7 +194,7 @@ const fetchMyBorrows = async () => {
 };
 
 // Borrow a book
-const borrowBook = async (book: Book) => {
+const borrowBook = async (book: Book & { id: number }) => {
   if (!book.id) return;
   
   borrowingId.value = book.id;
@@ -531,6 +537,18 @@ const formatDate = (dateString: string): string => {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.book-inventory {
+  margin-top: 0.5rem;
+}
+
+.inventory-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .primary-btn {

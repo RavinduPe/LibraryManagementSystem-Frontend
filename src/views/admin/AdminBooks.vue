@@ -98,8 +98,8 @@
               <span class="book-price">${{ book.price?.toFixed(2) }}</span>
             </div>
             <div class="book-status">
-              <span class="status-indicator" :class="book.available ? 'available' : 'borrowed'">
-                {{ book.available ? 'Available' : 'Borrowed' }}
+              <span class="status-indicator" :class="book.availableCopies > 0 ? 'available' : 'borrowed'">
+                {{ book.availableCopies > 0 ? 'Available' : 'Borrowed' }}
               </span>
             </div>
             <div class="book-actions">
@@ -205,6 +205,19 @@
           </div>
 
           <div class="form-group">
+            <label>Total Copies <span class="required">*</span></label>
+            <input
+              v-model.number="form.totalCopies"
+              type="number"
+              min="1"
+              required
+              placeholder="Enter total copies"
+              class="modern-input"
+              :disabled="formLoading"
+            />
+          </div>
+
+          <div class="form-group">
             <label class="checkbox-label">
               <input type="checkbox" v-model="form.available" :disabled="formLoading" />
               <span>Available for borrowing</span>
@@ -292,12 +305,17 @@ const form = ref({
   genre: '',
   price: 0,
   authorId: 0,
+  totalCopies: 1,
   available: true
 });
-
 // Computed
-const availableCount = computed(() => books.value.filter(b => b.available).length);
-const borrowedCount = computed(() => books.value.filter(b => !b.available).length);
+const availableCount = computed(() =>
+  books.value.filter(b => b.availableCopies > 0).length
+);
+
+const borrowedCount = computed(() =>
+  books.value.filter(b => b.availableCopies === 0).length
+);
 
 const uniqueGenres = computed(() => {
   const genres = books.value.map(b => b.genre).filter(Boolean);
@@ -412,6 +430,7 @@ const openCreateModal = () => {
     genre: '',
     price: 0,
     authorId: 0,
+    totalCopies: 1,
     available: true
   };
   showModal.value = true;
@@ -424,7 +443,8 @@ const editBook = (book: Book) => {
     genre: book.genre,
     price: book.price,
     authorId: book.authorId,
-    available: book.available || true
+    totalCopies: book.totalCopies,
+    available: book.available
   };
   showModal.value = true;
 };
@@ -444,7 +464,9 @@ const handleSubmit = async () => {
         title: form.value.title,
         genre: form.value.genre,
         price: form.value.price,
-        authorId: form.value.authorId
+        authorId: form.value.authorId,
+        totalCopies: form.value.totalCopies,
+        available: form.value.available
       });
       showSuccessToast('Book updated successfully');
     } else {
@@ -453,7 +475,10 @@ const handleSubmit = async () => {
         title: form.value.title,
         genre: form.value.genre,
         price: form.value.price,
-        authorId: form.value.authorId
+        authorId: form.value.authorId,
+        totalCopies: form.value.totalCopies,
+        available: form.value.available
+
       });
       showSuccessToast('Book created successfully');
     }

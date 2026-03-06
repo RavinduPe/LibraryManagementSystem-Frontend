@@ -23,6 +23,9 @@ export interface Book {
   authorId: number;
   authorName?: string;
   available?: boolean;
+  totalCopies: number
+  availableCopies: number
+
 }
 
 export interface Author {

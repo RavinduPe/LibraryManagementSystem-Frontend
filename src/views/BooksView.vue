@@ -18,7 +18,7 @@
         <p class="price">${{ book.price.toFixed(2) }}</p>
         
         <button 
-          v-if="book.available"
+          v-if="book.availableCopies > 0"
           @click="borrowBook(book.id!)"
           class="borrow-btn"
           :disabled="borrowingId === book.id"
